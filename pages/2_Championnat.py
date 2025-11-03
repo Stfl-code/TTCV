@@ -607,21 +607,21 @@ with tabs[4]:
         classement = classement[["Points", "Parties jouées", "Victoires", "Défaites", "%_Victoires", "Sets_gagnés", "Sets_concédés", "Diff_sets", "Points_gagnés", "Points_concédés", "Diff_points", "Bulles_infligées", "Bulles_concédées"]]
         classement.columns = ["Points", "Joués", "Victoires", "Défaites", "% Vict", "Sets Gagnés", "Sets Perdus", "Diff_sets", "Points Gagnés", "Points Perdus", "Diff_points", "Bulles_infligées", "Bulles_concédées"]
         
-    # Afficher sous forme de métriques plutôt qu'un tableau
-    col1, col2, col3, col4, col5 = st.columns(5)
-    with col1:
-        st.metric("Points", classement.loc[joueur, "Points"])
-    with col2:
-        st.metric("% Victoires", classement.loc[joueur, "% Vict"])
-    with col3:
-        st.metric("Diff_sets", classement.loc[joueur, "Diff_sets"])
-    with col4:
-        st.metric("Diff_points", classement.loc[joueur, "Diff_points"])
-    with col5:
-        st.metric("Bulles_infligées", classement.loc[joueur, "Bulles_infligées"])
+        # Afficher sous forme de métriques plutôt qu'un tableau
+        col1, col2, col3, col4, col5 = st.columns(5)
+        with col1:
+            st.metric("Points", classement.loc[joueur, "Points"])
+        with col2:
+            st.metric("% Victoires", classement.loc[joueur, "% Vict"])
+        with col3:
+            st.metric("Diff_sets", classement.loc[joueur, "Diff_sets"])
+        with col4:
+            st.metric("Diff_points", classement.loc[joueur, "Diff_points"])
+        with col5:
+            st.metric("Bulles_infligées", classement.loc[joueur, "Bulles_infligées"])
 
-    st.divider()
+        st.divider()
 
-    # Affichage du tableau complet
-    classement_styled = classement.style.apply(highlight_joueur, axis=1)
-    st.dataframe(classement_styled, use_container_width=True)
+        # Affichage du tableau complet
+        classement_styled = classement.style.apply(highlight_joueur, axis=1)
+        st.dataframe(classement_styled, use_container_width=True)
