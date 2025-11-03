@@ -1,0 +1,3 @@
+# Secrets Streamlit (TRÈS IMPORTANT)
+.streamlit/secrets.toml
+.streamlit/*.json
