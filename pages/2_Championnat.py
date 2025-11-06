@@ -11,7 +11,7 @@ from utils import init_google_sheets
 # Affichage #
 #############
 st.set_page_config(page_title="Championnat du Lundi", page_icon="🏆")
-#st.image("images/img_tournoi.png", use_container_width=True) # A modifier ##############################
+#st.image("images/img_tournoi.png", use_container_width=True) # A modifier #################
 st.write("# Championnat interne du club de tennis de table de Vaux-sur-Seine")
 
 #######################
@@ -588,40 +588,35 @@ with tabs[3]:
 # ------------------------- #
 with tabs[4]:
     st.header("Classement du championnat")
-
     st.subheader("Choisissez un joueur pour afficher ses stats et le mettre en surbrillance dans le tableau")
+
     # Sélection d'un joueur à afficher
     joueur = st.selectbox("Choix du joueur", options=liste_joueurs, key="joueur")
     
     stats_championnat = calculer_stats_championnat()
     
-    if all(s["Victoires"] == 0 and s["Défaites"] == 0 for s in stats_championnat.values()):
-        st.info("Aucune partie terminée pour le moment")
-    else:
-        classement = pd.DataFrame(stats_championnat).T
-        classement["Parties jouées"] = classement["Victoires"] + classement["Défaites"]
-        classement["%_Victoires"] = ((classement["Victoires"] / classement["Parties jouées"]) * 100).fillna(0).replace([float('inf'), -float('inf')], 0).round(0).astype(int).astype(str) + "%"
+    classement = pd.DataFrame(stats_championnat).T
+    classement["Parties jouées"] = classement["Victoires"] + classement["Défaites"]
+    classement["%_Victoires"] = ((classement["Victoires"] / classement["Parties jouées"]) * 100).fillna(0).replace([float('inf'), -float('inf')], 0).round(0).astype(int).astype(str) + "%"
+    classement = classement.sort_values(by=["Points", "Victoires", "Diff_sets", "Diff_points"], ascending=[False, False, False, False])
+    classement = classement[["Points", "Parties jouées", "Victoires", "Défaites", "%_Victoires", "Sets_gagnés", "Sets_concédés", "Diff_sets", "Points_gagnés", "Points_concédés", "Diff_points", "Bulles_infligées", "Bulles_concédées"]]
+    classement.columns = ["Points", "Joués", "Victoires", "Défaites", "% Vict", "Sets Gagnés", "Sets Perdus", "Diff_sets", "Points Gagnés", "Points Perdus", "Diff_points", "Bulles_infligées", "Bulles_concédées"]
         
-        classement = classement.sort_values(by=["Points", "Victoires", "Diff_sets", "Diff_points"], ascending=[False, False, False, False])
-        
-        classement = classement[["Points", "Parties jouées", "Victoires", "Défaites", "%_Victoires", "Sets_gagnés", "Sets_concédés", "Diff_sets", "Points_gagnés", "Points_concédés", "Diff_points", "Bulles_infligées", "Bulles_concédées"]]
-        classement.columns = ["Points", "Joués", "Victoires", "Défaites", "% Vict", "Sets Gagnés", "Sets Perdus", "Diff_sets", "Points Gagnés", "Points Perdus", "Diff_points", "Bulles_infligées", "Bulles_concédées"]
-        
-        # Afficher sous forme de métriques plutôt qu'un tableau
-        col1, col2, col3, col4, col5 = st.columns(5)
-        with col1:
-            st.metric("Points", classement.loc[joueur, "Points"])
-        with col2:
-            st.metric("% Victoires", classement.loc[joueur, "% Vict"])
-        with col3:
-            st.metric("Diff_sets", classement.loc[joueur, "Diff_sets"])
-        with col4:
-            st.metric("Diff_points", classement.loc[joueur, "Diff_points"])
-        with col5:
-            st.metric("Bulles_infligées", classement.loc[joueur, "Bulles_infligées"])
+    # Afficher sous forme de métriques plutôt qu'un tableau
+    col1, col2, col3, col4, col5 = st.columns(5)
+    with col1:
+        st.metric("Points", classement.loc[joueur, "Points"])
+    with col2:
+        st.metric("% Victoires", classement.loc[joueur, "% Vict"])
+    with col3:
+        st.metric("Diff_sets", classement.loc[joueur, "Diff_sets"])
+    with col4:
+        st.metric("Diff_points", classement.loc[joueur, "Diff_points"])
+    with col5:
+        st.metric("Bulles_infligées", classement.loc[joueur, "Bulles_infligées"])
 
-        st.divider()
+    st.divider()
 
-        # Affichage du tableau complet
-        classement_styled = classement.style.apply(highlight_joueur, axis=1)
-        st.dataframe(classement_styled, use_container_width=True)
+    # Affichage du tableau complet
+    classement_styled = classement.style.apply(highlight_joueur, axis=1)
+    st.dataframe(classement_styled, use_container_width=True)
