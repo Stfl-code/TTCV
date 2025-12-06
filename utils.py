@@ -14,6 +14,7 @@ def init_google_sheets():
         st.session_state.sheet_resultats_doub = sh.worksheet("resultats_double")
         st.session_state.sheet_tournoi = sh.worksheet("tournoi")
         st.session_state.sheet_championnat = sh.worksheet("championnat")
+        st.session_state.sheet_archive = sh.worksheet("archive")
         
         # Charger les joueurs
         prenoms = st.session_state.sheet_joueurs.col_values(1)[1:]

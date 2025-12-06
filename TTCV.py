@@ -13,7 +13,8 @@ st.markdown("<h2>Veuillez sélectionner une page via le menu déroulant ci-desso
 # Liste des pages disponibles (correspond au nom des fichiers sans les préfixes numériques)
 pages = {
     "Jeu libre": "Jeu libre",
-    "Championnat": "Championnat"
+    "Championnat": "Championnat",
+    "Archive": "Archive"
 }
 
 # Menu déroulant

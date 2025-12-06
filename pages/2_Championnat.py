@@ -156,8 +156,26 @@ def generer_appariements_aleatoires(joueurs, seed=None):
 # Tableau complet avec mise en surbrillance du joueur sélectionné
 def highlight_joueur(row):
     if row.name == joueur:
-        return ['background-color: #90EE90; font-weight: bold'] * len(row)  # vert
+        return ['background-color: #90EE90; font-weight: bold'] * len(row)
     return [''] * len(row)
+
+# Fonction pour colorier les victoires du tableau
+def highlight_victoires(val):
+    if val == "":
+        return ""
+    try:
+        score_split = val.split("-")
+        score_nous = int(score_split[0])
+        score_adv = int(score_split[1])
+        
+        if score_nous > score_adv:
+            return 'background-color: #90EE90'  # Vert pour victoire
+        elif score_nous < score_adv:
+            return 'background-color: #FFB6C6'  # Rouge clair pour défaite
+        else:
+            return ''
+    except:
+        return ''
 
 ########################
 # Choix du mode de jeu #
@@ -295,7 +313,23 @@ with tabs[1]:
             for tour_num, groupe in parties_termines.groupby("tour_num"):
                 st.markdown(f"### 🏁 Tour {tour_num}")
                 for _, parties in groupe.iterrows():
-                    st.info(f"🎯 **{parties['joueur_1']}** vs **{parties['joueur_2']}**")
+                    vainq = parties["vainqueur"]
+                    adv = parties["adversaire"]
+        
+                    # Récupérer les scores des sets
+                    sets = [
+                        parse_score(parties["Set_1"]),
+                        parse_score(parties["Set_2"]),
+                        parse_score(parties["Set_3"]),
+                        parse_score(parties["Set_4"]),
+                        parse_score(parties["Set_5"])
+                    ]
+        
+                    # Compter les sets remportés par le perdant (ceux avec signe négatif)
+                    sets_perdant = sum(1 for s in sets if s is not None and (s < 0 or s == -99))
+                    sets_vainqueur = 3  # Toujours 3 pour le vainqueur (meilleur des 5)
+
+                    st.info(f"🎯 **{vainq}** a gagné contre **{adv}** {sets_vainqueur} sets à {sets_perdant}")
 
         st.divider()
         
@@ -565,16 +599,32 @@ with tabs[3]:
         recap = pd.DataFrame("", index=liste_joueurs, columns=liste_joueurs)
         
         for _, row in championnat_df.iterrows():
+            if row["statut"] != "terminé":
+                continue
+                
             vainq = row["vainqueur"]
             adv = row["adversaire"]
-            score_v = row.get("score_vainqueur", 1)
-            score_a = row.get("score_adversaire", row.get("score_adv", 0))
             
+            # Récupérer les scores des sets
+            sets = [
+                parse_score(row["Set_1"]),
+                parse_score(row["Set_2"]),
+                parse_score(row["Set_3"]),
+                parse_score(row["Set_4"]),
+                parse_score(row["Set_5"])
+            ]
+            
+            # Compter les sets remportés par le perdant (ceux avec signe négatif)
+            sets_perdant = sum(1 for s in sets if s is not None and (s < 0 or s == -99))
+            sets_vainqueur = 3  # Toujours 3 pour le vainqueur (meilleur des 5)
+            
+            # Remplir la matrice
             if vainq in liste_joueurs and adv in liste_joueurs:
-                recap.loc[vainq, adv] = f"{score_v}-{score_a}"
-                recap.loc[adv, vainq] = f"{score_a}-{score_v}"
-        
-        st.dataframe(recap, use_container_width=True)
+                recap.loc[vainq, adv] = f"{sets_perdant}-{sets_vainqueur}"
+                recap.loc[adv, vainq] = f"{sets_vainqueur}-{sets_perdant}"
+
+        recap_styled = recap.style.applymap(highlight_victoires)
+        st.dataframe(recap_styled, use_container_width=True)
 
     st.divider()
 
