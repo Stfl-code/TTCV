@@ -14,6 +14,7 @@ st.markdown("<h2>Veuillez sélectionner une page via le menu déroulant ci-desso
 pages = {
     "Jeu libre": "Jeu libre",
     "Championnat": "Championnat",
+    "Tournoi": "Tournoi",
     "Archive": "Archive"
 }
 
